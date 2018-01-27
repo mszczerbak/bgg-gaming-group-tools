@@ -46,7 +46,7 @@ for id in games.keys():
 	except:
 		for name in dico["items"]["item"]["name"]:
 			if name["@type"] == "primary":
-				name = name["@value"].encode("utf-8")
+				name = name["@value"]
 				break
 	users = ""
 	rate_sum = 0
@@ -85,13 +85,13 @@ for id in games.keys():
 	if dico["items"]["item"]["@type"] == "boardgame":
 		basegame = "1"
 	file = open("common_ludo.tsv","a+")
-	file.write(id + "\t")
-	file.write(name + "\t")
+	file.write(id.encode("utf-8") + "\t")
+	file.write(name.encode("utf-8") + "\t")
 	file.write(dico["items"]["item"]["thumbnail"].encode("utf-8") + "\t")
 	file.write("https://boardgamegeek.com/boardgame/" + id + "\t")
-	file.write(users + "\t")
-	file.write(rating + "\t")
-	file.write(ranking + "\t")
+	file.write(users.encode("utf-8") + "\t")
+	file.write(rating.encode("utf-8") + "\t")
+	file.write(ranking.encode("utf-8") + "\t")
 	file.write(dico["items"]["item"]["yearpublished"]["@value"].encode("utf-8") + "\t")
 	file.write(dico["items"]["item"]["minplayers"]["@value"].encode("utf-8") + "\t")
 	file.write(dico["items"]["item"]["maxplayers"]["@value"].encode("utf-8") + "\t")
@@ -99,9 +99,9 @@ for id in games.keys():
 	file.write(dico["items"]["item"]["minplaytime"]["@value"].encode("utf-8") + "\t")
 	file.write(dico["items"]["item"]["maxplaytime"]["@value"].encode("utf-8") + "\t")
 	file.write(dico["items"]["item"]["minage"]["@value"].encode("utf-8") + "\t")
-	file.write(categories + "\t")
-	file.write(mechanics + "\t")
-	file.write(basegame + "\n")
+	file.write(categories.encode("utf-8") + "\t")
+	file.write(mechanics.encode("utf-8") + "\t")
+	file.write(basegame.encode("utf-8") + "\n")
 	file.close()
 	if i%100 == 0 and i>0:
 		print " .." + str(i) + " games done"

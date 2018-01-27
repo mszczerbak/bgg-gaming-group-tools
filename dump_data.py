@@ -15,7 +15,7 @@ file.close()
 for user in users:
 	print "processing " + user
 	while True:
-		r = requests.get("https://www.boardgamegeek.com/xmlapi2/collection?username=" + user + "&stats=1")
+		r = requests.get("https://www.boardgamegeek.com/xmlapi2/collection?username=" + user + "&stats=1&version=1")
 		if r.status_code == 200:
 			break
 		time.sleep(17)
@@ -26,6 +26,8 @@ for user in users:
 	for i in range(items_nb):
 		if i%100 == 0 and i > 0:
 			print " ..processed " + str(i) + " items"
+		if "version" in dico["items"]["item"][i]:
+			continue #skip the verion declaration, which are duplicates of the games themselves
 		rating = dico["items"]["item"][i]["stats"]["rating"]["@value"].encode('utf-8')
 		if rating == "N/A":
 			rating = ""
