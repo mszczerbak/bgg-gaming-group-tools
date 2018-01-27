@@ -15,7 +15,7 @@ Clone the repo.
 ## Requires
 
 ```bash
-pip install xmltodict
+$ pip install xmltodict
 ```
 
 ## Organisation
