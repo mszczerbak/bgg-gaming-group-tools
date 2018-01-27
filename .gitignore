@@ -103,3 +103,4 @@ ENV/
 
 #CUSTOM
 *.tsv
+*.html

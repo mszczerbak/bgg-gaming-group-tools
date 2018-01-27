@@ -27,11 +27,13 @@ for user in users:
 	body = r.content
 	dico = xmltodict.parse(body)
 	items_nb = int(dico["items"]["@totalitems"])
+	already = []
 	for i in range(items_nb):
 		if i%100 == 0 and i > 0:
 			print " ..processed " + str(i) + " items"
-		if "version" in dico["items"]["item"][i]:
+		if "version" in dico["items"]["item"][i] and int(dico["items"]["item"][i]["@objectid"]) in already:
 			continue #skip the verion declaration, which are duplicates of the games themselves
+		already += [int(dico["items"]["item"][i]["@objectid"])]
 		rating = dico["items"]["item"][i]["stats"]["rating"]["@value"].encode('utf-8')
 		if rating == "N/A":
 			rating = ""
