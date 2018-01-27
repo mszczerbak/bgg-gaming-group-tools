@@ -2,12 +2,16 @@ import time
 import xmltodict
 import requests
 
+DATA_PATH = "../data/"
+IN_FILE = "pc_users.csv"
+OUT_FILE = "data_dump.tsv"
+
 #init in/out
-file = open("pc_users.csv","r")
+file = open(DATA_PATH + IN_FILE,"r")
 userline = file.read()
 file.close()
 users = userline.split(",")
-file = open("data_dump.tsv","w")
+file = open(DATA_PATH + OUT_FILE,"w")
 file.write("user\tobjecttype\tobjectid\tsubtype\tcollid\tname\trating\town\tprevowned\tfortrade\twant\twanttoplay\twanttobuy\twishlist\tpreordered\n")
 file.close()
 
@@ -31,7 +35,7 @@ for user in users:
 		rating = dico["items"]["item"][i]["stats"]["rating"]["@value"].encode('utf-8')
 		if rating == "N/A":
 			rating = ""
-		file = open("data_dump.tsv","a+")
+		file = open(DATA_PATH + OUT_FILE,"a+")
 		file.write(user + "\t")
 		file.write(dico["items"]["item"][i]["@objecttype"].encode('utf-8') + "\t")
 		file.write(dico["items"]["item"][i]["@objectid"].encode('utf-8') + "\t")
