@@ -12,6 +12,12 @@ Clone the repo.
 [.../scripts]$ python 3_generate_js.py
 ```
 
+## Requires
+
+```bash
+pip install xmltodict
+```
+
 ## Organisation
 
 * [b]./data[/b] - in/out data
