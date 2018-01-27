@@ -20,6 +20,6 @@ $ pip install xmltodict
 
 ## Organisation
 
-* [b]./data[/b] - in/out data
-* [b]./scripts[/b] - scripts to launch
-* [b]./visual[/b] - visual results
+* __./data__ - in/out data
+* __./scripts__ - scripts to launch
+* __./visual__ - visual results
