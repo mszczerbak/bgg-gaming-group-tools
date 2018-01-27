@@ -33,9 +33,11 @@ file.close()
 print " .." + str(i) + " games aggregated"
 
 #enrich and store
+ratingDB = pandas.read_csv(DATA_PATH + IN_FILE, sep="\t")
+ratings = ratingDB[["objectid","rating"]].groupby("objectid").mean()["rating"]
 print "enriching and storing data"
 try:
-	existingDB = pandas.read_csv(DATA_PATH + OUT_FILE, sep="\t")
+	existingDB = pandas.read_csv(DATA_PATH + OUT_FILE, sep="\t", encoding="utf-8")
 except:
 	existingDB = None
 i = 1
@@ -93,8 +95,8 @@ for id in games.keys():
 	else:
 		existingEL = existingDB[existingDB["id"]==int(id)].iloc[0]
 		name = existingEL["name"]
-		categories = existingEL["categories"]
-		mechanics = existingEL["mechanics"]
+		categories = ("" if pandas.isnull(existingEL["categories"]) else existingEL["categories"])
+		mechanics = ("" if pandas.isnull(existingEL["mechanics"]) else existingEL["mechanics"])
 		ranking = "%.0f" % existingEL["bgg_ranking"]
 		basegame = "%.0f" % existingEL["basegame"]
 		thumbnail = existingEL["photo"]
@@ -107,19 +109,13 @@ for id in games.keys():
 		minage = "%.0f" % existingEL["minage"]
 		new = "0"
 	users = ""
-	rate_sum = 0
-	rate_num = 0
 	for user in games[id]:
 		users += user["user"] + ","
-		if user["rating"] != "":
-			rate_sum += float(user["rating"])
-			rate_num += 1
 	if len(users) > 0:
 		users = users[:-1]
 	rating = ""
-	if rate_num > 0:
-		rate = rate_sum / rate_num
-		rating = "%.1f" % rate
+	if ~pandas.isnull(ratings[int(id)]):
+		rating = "%.1f" % ratings[int(id)]
 	file = open(DATA_PATH + OUT_FILE,"a+")
 	file.write(id.encode("utf-8") + "\t")
 	file.write(name.encode("utf-8") + "\t")
