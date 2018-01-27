@@ -102,4 +102,4 @@ ENV/
 
 
 #CUSTOM
-data_dump.csv
+*.tsv
