@@ -26,11 +26,9 @@ for user in users:
 	for i in range(items_nb):
 		if i%100 == 0 and i > 0:
 			print " ..processed " + str(i) + " items"
-		rating = ""
-		try:
-			rating = dico["items"]["item"][i]["stats"]["rating"]["@value"].encode('utf-8')
-		except:
-			pass
+		rating = dico["items"]["item"][i]["stats"]["rating"]["@value"].encode('utf-8')
+		if rating == "N/A":
+			rating = ""
 		file = open("data_dump.tsv","a+")
 		file.write(user + "\t")
 		file.write(dico["items"]["item"][i]["@objecttype"].encode('utf-8') + "\t")

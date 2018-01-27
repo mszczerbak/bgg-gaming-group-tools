@@ -1,32 +1,43 @@
 #init
+import time
 import requests
 import xmltodict
 games = {}
 
 #aggregate data
-file = open("data_dump.csv","r")
+print "aggregating data"
+file = open("data_dump.tsv","r")
 i = 0
 for line in file:
 	if i == 0:
-		headers = line[:-1].split(",")
+		headers = line[:-1].split("\t")
 		i += 1
 		continue
-	split_line = line[:-1].split(",")
+	split_line = line[:-1].split("\t")
 	if split_line[headers.index("subtype")] == "boardgame":
 		if split_line[headers.index("own")] == "1":
 			if split_line[headers.index("objectid")] not in games.keys():
 				games[split_line[headers.index("objectid")]] = [{"user":split_line[headers.index("user")],"rating":split_line[headers.index("rating")]}]
 			else:
 				games[split_line[headers.index("objectid")]] += [{"user":split_line[headers.index("user")],"rating":split_line[headers.index("rating")]}]
+	if i%100 == 0:
+		print " .." + str(i) + " games aggregated"
 	i += 1
 file.close()
+print " .." + str(i) + " games aggregated"
 
 #enrich and store
-file = open("common_ludo.csv","w")
-file.write("id,name,photo,link,users,pc_rating,bgg_ranking,yearpublished,minplayers,maxplayers,playingtime,minplaytime,maxplaytime,minage,categories,mechanics,basegame\n")
+print "enriching and storing data"
+i = 1
+file = open("common_ludo.tsv","w")
+file.write("id\tname\tphoto\tlink\tusers\tpc_rating\tbgg_ranking\tyearpublished\tminplayers\tmaxplayers\tplayingtime\tminplaytime\tmaxplaytime\tminage\tcategories\tmechanics\tbasegame\n")
 file.close()
 for id in games.keys():
-	r = requests.get("https://www.boardgamegeek.com/xmlapi2/thing?id=" + id + "&stats=1")
+	while True:
+		r = requests.get("https://www.boardgamegeek.com/xmlapi2/thing?id=" + id + "&stats=1")
+		if r.status_code == 200:
+			break
+		time.sleep(17)
 	body = r.content
 	dico = xmltodict.parse(body)
 	name = ""
@@ -41,7 +52,7 @@ for id in games.keys():
 	rate_sum = 0
 	rate_num = 0
 	for user in games[id]:
-		users += user["user"] + "+"
+		users += user["user"] + ","
 		if user["rating"] != "":
 			rate_sum += float(user["rating"])
 			rate_num += 1
@@ -55,9 +66,9 @@ for id in games.keys():
 	mechanics = ""
 	for link in dico["items"]["item"]["link"]:
 		if link["@type"] == "boardgamecategory":
-			categories += link["@value"] + "+"
+			categories += link["@value"] + ","
 		if link["@type"] == "boardgamemechanic":
-			mechanics += link["@value"] + "+"
+			mechanics += link["@value"] + ","
 	if len(categories) > 0:
 		categories = categories[:-1]
 	if len(mechanics) > 0:
@@ -68,25 +79,31 @@ for id in games.keys():
 		except:
 			if rank["@name"] == "boardgame":
 				ranking = rank["@value"]
+	if ranking == "Not Ranked":
+		ranking = ""
 	basegame = "0"
 	if dico["items"]["item"]["@type"] == "boardgame":
 		basegame = "1"
-	file = open("common_ludo.csv","a+")
-	file.write(id + ",")
-	file.write(name + ",")
-	file.write(dico["items"]["item"]["thumbnail"].encode("utf-8") + ",")
-	file.write("https://boardgamegeek.com/boardgame/" + id + ",")
-	file.write(users + ",")
-	file.write(rating + ",")
-	file.write(ranking + ",")
-	file.write(dico["items"]["item"]["yearpublished"]["@value"].encode("utf-8") + ",")
-	file.write(dico["items"]["item"]["minplayers"]["@value"].encode("utf-8") + ",")
-	file.write(dico["items"]["item"]["maxplayers"]["@value"].encode("utf-8") + ",")
-	file.write(dico["items"]["item"]["playingtime"]["@value"].encode("utf-8") + ",")
-	file.write(dico["items"]["item"]["minplaytime"]["@value"].encode("utf-8") + ",")
-	file.write(dico["items"]["item"]["maxplaytime"]["@value"].encode("utf-8") + ",")
-	file.write(dico["items"]["item"]["minage"]["@value"].encode("utf-8") + ",")
-	file.write(categories + ",")
-	file.write(mechanics + ",")
+	file = open("common_ludo.tsv","a+")
+	file.write(id + "\t")
+	file.write(name + "\t")
+	file.write(dico["items"]["item"]["thumbnail"].encode("utf-8") + "\t")
+	file.write("https://boardgamegeek.com/boardgame/" + id + "\t")
+	file.write(users + "\t")
+	file.write(rating + "\t")
+	file.write(ranking + "\t")
+	file.write(dico["items"]["item"]["yearpublished"]["@value"].encode("utf-8") + "\t")
+	file.write(dico["items"]["item"]["minplayers"]["@value"].encode("utf-8") + "\t")
+	file.write(dico["items"]["item"]["maxplayers"]["@value"].encode("utf-8") + "\t")
+	file.write(dico["items"]["item"]["playingtime"]["@value"].encode("utf-8") + "\t")
+	file.write(dico["items"]["item"]["minplaytime"]["@value"].encode("utf-8") + "\t")
+	file.write(dico["items"]["item"]["maxplaytime"]["@value"].encode("utf-8") + "\t")
+	file.write(dico["items"]["item"]["minage"]["@value"].encode("utf-8") + "\t")
+	file.write(categories + "\t")
+	file.write(mechanics + "\t")
 	file.write(basegame + "\n")
 	file.close()
+	if i%100 == 0 and i>0:
+		print " .." + str(i) + " games done"
+	i += 1
+print " .." + str(i-1) + " games done"
