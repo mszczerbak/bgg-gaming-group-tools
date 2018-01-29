@@ -5,6 +5,7 @@
 
 
 DATA_PATH = "../data/"
+HTML_PATH = "../visual/"
 IN_FILE = "data_dump.tsv"
 OUT_FILE = "game_want_own.tsv"
 OUT_FILE_JS = "game_want_own.html"
@@ -54,7 +55,7 @@ for game_id in games_want_own:
 fileo.close()
 
 
-filejs = open(DATA_PATH + OUT_FILE_JS, "w")
+filejs = open(HTML_PATH + OUT_FILE_JS, "w")
 filejs.write("<html>\n")
 filejs.write("<head>\n")
 filejs.write("<meta charset=\"UTF-8\">\n")
