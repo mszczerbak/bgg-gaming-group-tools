@@ -116,6 +116,24 @@ for id in games.keys():
 	rating = ""
 	if ~pandas.isnull(ratings[int(id)]):
 		rating = "%.1f" % ratings[int(id)]
+	if rating == "nan":
+		rating = ""
+	if ranking == "nan":
+		ranking = ""
+	if yearpublished == "nan":
+		yeapublished = ""
+	if minplayers == "nan":
+		minplayers = ""
+	if maxplayers == "nan":
+		maxplayers = ""
+	if playingtime == "nan":
+		playingtime = ""
+	if minplaytime == "nan":
+		minplaytime = ""
+	if maxplaytime == "nan":
+		maxplaytime = ""
+	if minage == "nan":
+		minage = ""
 	file = open(DATA_PATH + OUT_FILE,"a+")
 	file.write(id.encode("utf-8") + "\t")
 	file.write(name.encode("utf-8") + "\t")
