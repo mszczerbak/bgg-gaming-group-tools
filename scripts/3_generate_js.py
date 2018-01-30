@@ -3,6 +3,10 @@ HTML_PATH = "../visual/"
 IN_FILE = "common_ludo.tsv"
 OUT_FILE = "common_ludo.html"
 
+import os
+if not os.path.exists(HTML_PATH):
+	os.makedirs(HTML_PATH)
+
 headers = []
 filei = open(DATA_PATH + IN_FILE, "r")
 fileo = open(HTML_PATH + OUT_FILE, "w")
