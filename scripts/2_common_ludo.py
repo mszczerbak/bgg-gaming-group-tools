@@ -90,7 +90,22 @@ for id in games.keys():
 		playingtime = dico["items"]["item"]["playingtime"]["@value"]
 		minplaytime = dico["items"]["item"]["minplaytime"]["@value"]
 		maxplaytime = dico["items"]["item"]["maxplaytime"]["@value"]
-		minage = dico["items"]["item"]["minage"]["@value"]
+		minage = "0"
+		if "poll" in dico["items"]["item"].keys():
+			for p in range(len(dico["items"]["item"]["poll"])):
+				if dico["items"]["item"]["poll"][p]["@name"] == "suggested_playerage":
+					max = 0
+					best = "0"
+					if "results" in dico["items"]["item"]["poll"][p]:
+						for l in range(len(dico["items"]["item"]["poll"][p]["results"]["result"])):
+							if int(dico["items"]["item"]["poll"][p]["results"]["result"][l]["@numvotes"]) > max:
+								max = int(dico["items"]["item"]["poll"][p]["results"]["result"][l]["@numvotes"])
+								best = dico["items"]["item"]["poll"][p]["results"]["result"][l]["@value"]
+					minage = ("21" if best == "21 and up" else best)
+				else:
+					continue
+		if minage == "0":
+			minage = dico["items"]["item"]["minage"]["@value"]
 		new = "1"
 	else:
 		existingEL = existingDB[existingDB["id"]==int(id)].iloc[0]
