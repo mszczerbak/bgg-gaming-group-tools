@@ -12,7 +12,7 @@ userline = file.read()
 file.close()
 users = userline.split(",")
 file = open(DATA_PATH + OUT_FILE,"w")
-file.write("user\tobjecttype\tobjectid\tsubtype\tcollid\tname\trating\town\tprevowned\tfortrade\twant\twanttoplay\twanttobuy\twishlist\tpreordered\n")
+file.write("user\tobjecttype\tobjectid\tsubtype\tcollid\tname\trating\town\tprevowned\tfortrade\twantintrade\twanttoplay\twanttobuy\twishlist\tpreordered\n")
 file.close()
 
 #get the data

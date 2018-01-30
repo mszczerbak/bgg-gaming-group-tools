@@ -7,10 +7,13 @@
 DATA_PATH = "../data/"
 HTML_PATH = "../visual/"
 IN_FILE = "data_dump.tsv"
-OUT_FILE = "game_want_own.tsv"
-OUT_FILE_JS = "game_want_own.html"
+OUT_FILE_WO = "game_want_own.tsv"
+OUT_FILE_WT = "game_wish_trade.tsv"
+OUT_FILE_WO_JS = "game_want_own.html"
+OUT_FILE_WT_JS = "game_wish_trade.html"
 
 games_want_own = {}  # key = bgg game oid ; value = {name : game name,want:[users], own:[users]}
+games_wish_trade = {}  # key = bgg game oid ; value = {name : game name,wish:[users], trade:[users]}
 
 # aggregate data
 print "aggregating data"
@@ -27,21 +30,25 @@ for line in filei:
 		user = split_line[headers.index("user")]
 		if not split_line[headers.index("objectid")] in games_want_own:
 			games_want_own[game_id] = {'name': split_line[headers.index("name")], 'own': [], 'want': []}
+			games_wish_trade[game_id] = {'name': split_line[headers.index("name")], 'trade': [], 'wish': []}
 
 		if split_line[headers.index("own")] == "1" or \
 						split_line[headers.index("preordered")] == "1":
-			games_want_own[game_id]['own'].append(user)
-		elif split_line[headers.index("want")] == "1" or \
+			games_want_own[game_id]["own"].append(user)
+		if split_line[headers.index("fortrade")] == "1":
+			games_wish_trade[game_id]["trade"].append(user)
+		if split_line[headers.index("wantintrade")] == "1" or \
 						split_line[headers.index("wishlist")] == "1" or \
-						split_line[headers.index("wanttoplay")] == "1" or \
 						split_line[headers.index("wanttobuy")] == "1":
-			games_want_own[game_id]['want'].append(user)
+			games_wish_trade[game_id]["wish"].append(user)
+		if split_line[headers.index("wanttoplay")] == "1":
+			games_want_own[game_id]["want"].append(user)
 	if i % 100 == 0:
 		print " .." + str(i) + " games processed"
 	i += 1
 filei.close()
 
-fileo = open(DATA_PATH + OUT_FILE, "w")
+fileo = open(DATA_PATH + OUT_FILE_WO, "w")
 fileo.write("id\tname\tplayersown\tplayerswant\n")
 for game_id in games_want_own:
 	game = games_want_own[game_id]
@@ -54,8 +61,82 @@ for game_id in games_want_own:
 	            + wanters + "\n")
 fileo.close()
 
+fileo = open(DATA_PATH + OUT_FILE_WT, "w")
+fileo.write("id\tname\tplayerstrade\tplayerswish\n")
+for game_id in games_wish_trade:
+	game = games_wish_trade[game_id]
+	owners = ','.join(str(x) for x in game['trade']) if game['trade'] else 'PERSONNE'
+	wanters = ','.join(str(x) for x in game['wish']) if game['wish'] else 'PERSONNE'
 
-filejs = open(HTML_PATH + OUT_FILE_JS, "w")
+	fileo.write(game_id + "\t"
+	            + game['name'] + "\t"
+	            + owners + "\t"
+	            + wanters + "\n")
+fileo.close()
+
+
+filejs = open(HTML_PATH + OUT_FILE_WO_JS, "w")
+filejs.write("<html>\n")
+filejs.write("<head>\n")
+filejs.write("<meta charset=\"UTF-8\">\n")
+filejs.write("<title>PC marketplace</title>\n")
+filejs.write("<script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js\"></script>\n")
+filejs.write("<link rel=\"stylesheet\" type=\"text/css\" href=\"http://cdn.datatables.net/1.10.16/css/jquery.dataTables.css\">\n")
+filejs.write("<script type=\"text/javascript\" charset=\"utf8\" src=\"http://cdn.datatables.net/1.10.16/js/jquery.dataTables.js\"></script>\n")
+filejs.write("<style>\n")
+filejs.write("\ta {\n")
+filejs.write("\t\tcolor: black;\n")
+filejs.write("\t\ttext-decoration: none;\n")
+filejs.write("\t}\n")
+filejs.write("\ta:hover {\n")
+filejs.write("\t\ttext-decoration: underline;\n")
+filejs.write("\t}\n")
+filejs.write("</style>\n")
+filejs.write("</head>\n")
+filejs.write("<body bgcolor=\"white\">\n")
+filejs.write("\t<table id=\"commons\" class=\"display\" width=\"100%\" cellspacing=\"0\">\n")
+filejs.write("\t\t<thead>\n")
+filejs.write("\t\t\t<tr>\n")
+filejs.write("\t\t\t\t<th>ID</th>\n")
+filejs.write("\t\t\t\t<th>Name</th>\n")
+filejs.write("\t\t\t\t<th>Veulent tester le jeu</th>\n")
+filejs.write("\t\t\t\t<th>Ont le jeu</th>\n")
+filejs.write("\t\t\t</tr>\n")
+filejs.write("\t\t</thead>\n")
+filejs.write("\t\t<tfoot>\n")
+filejs.write("\t\t\t<tr>\n")
+filejs.write("\t\t\t\t<th>ID</th>\n")
+filejs.write("\t\t\t\t<th>Name</th>\n")
+filejs.write("\t\t\t\t<th>Veulent tester le jeu</th>\n")
+filejs.write("\t\t\t\t<th>Ont le jeu</th>\n")
+filejs.write("\t\t\t</tr>\n")
+filejs.write("\t\t</tfoot>\n")
+filejs.write("\t\t<tbody>\n")
+for game_id in games_want_own:
+	game = games_want_own[game_id]
+
+	if not game['want']:
+		continue # if someone has, but no one want, it's useless...
+
+	owners = str(len(game['own']))+' joueurs ('+','.join(str(x) for x in game['own'])+')' if game['own'] else 'PERSONNE'
+	wanters = str(len(game['want']))+' joueurs ('+','.join(str(x) for x in game['want'])+')' if game['want'] else 'PERSONNE'
+
+	filejs.write('<tr><td>'+game_id + "</td><td>"
+	            + game['name'] + "</td><td>"
+	            + wanters + "</td><td>"
+	            + owners + "</tr>\n")
+filejs.write("\t\t</tbody>\n")
+filejs.write("\t</table>\n")
+filejs.write("<script>\n")
+filejs.write("$(document).ready( function () {\n")
+filejs.write("\t$('#commons').DataTable();});\n")
+filejs.write("</script>\n")
+filejs.write("</body>\n")
+filejs.write("</html>\n")
+filejs.close()
+
+
+filejs = open(HTML_PATH + OUT_FILE_WT_JS, "w")
 filejs.write("<html>\n")
 filejs.write("<head>\n")
 filejs.write("<meta charset=\"UTF-8\">\n")
@@ -80,26 +161,26 @@ filejs.write("\t\t\t<tr>\n")
 filejs.write("\t\t\t\t<th>ID</th>\n")
 filejs.write("\t\t\t\t<th>Name</th>\n")
 filejs.write("\t\t\t\t<th>Veulent le jeu</th>\n")
-filejs.write("\t\t\t\t<th>Ont le jeu</th>\n")
+filejs.write("\t\t\t\t<th>Vendent le jeu</th>\n")
 filejs.write("\t\t\t</tr>\n")
 filejs.write("\t\t</thead>\n")
 filejs.write("\t\t<tfoot>\n")
 filejs.write("\t\t\t<tr>\n")
 filejs.write("\t\t\t\t<th>ID</th>\n")
 filejs.write("\t\t\t\t<th>Name</th>\n")
-filejs.write("\t\t\t\t<th>Veulent le jeu</th>\n")
+filejs.write("\t\t\t\t<th>Vendent le jeu</th>\n")
 filejs.write("\t\t\t\t<th>Ont le jeu</th>\n")
 filejs.write("\t\t\t</tr>\n")
 filejs.write("\t\t</tfoot>\n")
 filejs.write("\t\t<tbody>\n")
-for game_id in games_want_own:
-	game = games_want_own[game_id]
+for game_id in games_wish_trade:
+	game = games_wish_trade[game_id]
 
-	if not game['want']:
+	if not game['wish']:
 		continue # if someone has, but no one want, it's useless...
 
-	owners = str(len(game['own']))+' joueurs ('+','.join(str(x) for x in game['own'])+')' if game['own'] else 'PERSONNE'
-	wanters = str(len(game['want']))+' joueurs ('+','.join(str(x) for x in game['want'])+')' if game['want'] else 'PERSONNE'
+	owners = str(len(game['trade']))+' joueurs ('+','.join(str(x) for x in game['trade'])+')' if game['trade'] else 'PERSONNE'
+	wanters = str(len(game['wish']))+' joueurs ('+','.join(str(x) for x in game['wish'])+')' if game['wish'] else 'PERSONNE'
 
 	filejs.write('<tr><td>'+game_id + "</td><td>"
 	            + game['name'] + "</td><td>"
