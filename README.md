@@ -15,6 +15,8 @@ Clone the repo.
 ## Requires
 
 ```bash
+$ pip install requests
+$ pip install pandas
 $ pip install xmltodict
 ```
 
