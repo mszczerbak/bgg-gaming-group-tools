@@ -9,6 +9,7 @@ Clone the repo.
 ```bash
 [.../scripts]$ python 1_dump_data.py
 [.../scripts]$ python 2_common_ludo.py
+[.../scripts]$ python 2_want_own_match.py
 [.../scripts]$ python 3_generate_js.py
 ```
 
