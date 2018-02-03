@@ -3,23 +3,23 @@ import xmltodict
 import requests
 
 DATA_PATH = "../data/"
-IN_FILE = "pc_users.csv"
+IN_FILE = "pc_users.data"
 OUT_FILE = "data_dump.tsv"
 
 #init in/out
 file = open(DATA_PATH + IN_FILE,"r")
 userline = file.read()
 file.close()
-users = userline.split(",")
+users = userline.split("\n")
 file = open(DATA_PATH + OUT_FILE,"w")
-file.write("user\tobjecttype\tobjectid\tsubtype\tcollid\tname\trating\town\tprevowned\tfortrade\twant\twanttoplay\twanttobuy\twishlist\tpreordered\n")
+file.write("user\tobjecttype\tobjectid\tsubtype\tcollid\tname\trating\town\tprevowned\tfortrade\twantintrade\twanttoplay\twanttobuy\twishlist\tpreordered\n")
 file.close()
 
 #get the data
 for user in users:
 	print "processing " + user
 	while True:
-		r = requests.get("https://www.boardgamegeek.com/xmlapi2/collection?username=" + user + "&stats=1&version=1")
+		r = requests.get("https://www.boardgamegeek.com/xmlapi2/collection?username=" + user.split(":")[0] + "&stats=1&version=1")
 		if r.status_code == 200:
 			break
 		time.sleep(17)
@@ -38,7 +38,7 @@ for user in users:
 		if rating == "N/A":
 			rating = ""
 		file = open(DATA_PATH + OUT_FILE,"a+")
-		file.write(user + "\t")
+		file.write((user.split(":")[0] if user.split(":")[1]=="" else user.split(":")[1]) + "\t")
 		file.write(dico["items"]["item"][i]["@objecttype"].encode('utf-8') + "\t")
 		file.write(dico["items"]["item"][i]["@objectid"].encode('utf-8') + "\t")
 		file.write(dico["items"]["item"][i]["@subtype"].encode('utf-8') + "\t")
