@@ -18,12 +18,22 @@ file.close()
 #get the data
 for user in users:
 	print "processing " + user
+
+	try:
+		bggPseudo = user.split(":")[0]
+		username = user.split(":")[1]
+	except IndexError:
+		print 'can not parse user '+user
+		break
+
 	while True:
-		r = requests.get("https://www.boardgamegeek.com/xmlapi2/collection?username=" + user.split(":")[0] + "&stats=1&version=1")
+		r = requests.get("https://www.boardgamegeek.com/xmlapi2/collection?username=" + bggPseudo + "&stats=1&version=1")
 		if r.status_code == 200:
 			break
+		print " ..bgg api unavailable, waiting..."
 		time.sleep(17)
 	print " ..got response"
+
 	body = r.content
 	dico = xmltodict.parse(body)
 	items_nb = int(dico["items"]["@totalitems"])
@@ -38,7 +48,7 @@ for user in users:
 		if rating == "N/A":
 			rating = ""
 		file = open(DATA_PATH + OUT_FILE,"a+")
-		file.write((user.split(":")[0] if user.split(":")[1]=="" else user.split(":")[1]) + "\t")
+		file.write((bggPseudo if username == "" else username) + "\t")
 		file.write(dico["items"]["item"][i]["@objecttype"].encode('utf-8') + "\t")
 		file.write(dico["items"]["item"][i]["@objectid"].encode('utf-8') + "\t")
 		file.write(dico["items"]["item"][i]["@subtype"].encode('utf-8') + "\t")

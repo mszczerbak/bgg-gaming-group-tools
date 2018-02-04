@@ -25,14 +25,17 @@ for line in filei:
 	if split_line[headers.index("subtype")] == "boardgame":
 		game_id = split_line[headers.index("objectid")]
 		user = split_line[headers.index("user")]
+
 		if not split_line[headers.index("objectid")] in games_to_play:
 			games_to_play[game_id] = {'name': split_line[headers.index("name")], 'has': [], 'want': []}
 			games_to_trade[game_id] = {'name': split_line[headers.index("name")], 'has': [], 'want': []}
+
 		if split_line[headers.index("own")] == "1" or \
 						split_line[headers.index("preordered")] == "1":
 			games_to_play[game_id]["has"].append(user)
 		if split_line[headers.index("fortrade")] == "1":
 			games_to_trade[game_id]["has"].append(user)
+
 		if split_line[headers.index("wantintrade")] == "1" or \
 						split_line[headers.index("wishlist")] == "1" or \
 						split_line[headers.index("wanttobuy")] == "1":
