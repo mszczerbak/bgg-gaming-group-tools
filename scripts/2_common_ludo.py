@@ -154,7 +154,7 @@ for id in games.keys():
 	file.write(name.encode("utf-8") + "\t")
 	file.write(thumbnail.encode("utf-8") + "\t")
 	file.write("https://boardgamegeek.com/boardgame/" + id + "\t")
-	file.write(users.encode("utf-8") + "\t")
+	file.write(users + "\t")
 	file.write(rating.encode("utf-8") + "\t")
 	file.write(ranking.encode("utf-8") + "\t")
 	file.write(yearpublished.encode("utf-8") + "\t")
