@@ -4,6 +4,7 @@ IN_FILE = ["","common_ludo.tsv", "play_together.tsv", "trade_games.tsv", "trade_
 OUT_FILE = ["index.html", "common_ludo.html", "play_together.html", "trade_games.html", "crowd_test.html"]
 TITLE = ["Outils powered by BGG API", "Jeux de tous les membres", "Partageons nos jeux", "Bourse aux jeux", "Crowd testing"]
 
+from time import gmtime, strftime
 import os
 if not os.path.exists(HTML_PATH):
 	os.makedirs(HTML_PATH)
@@ -26,12 +27,13 @@ fileo.write("</head>\n")
 fileo.write("<body bgcolor=\"white\">\n")
 fileo.write("<table width=\"100%\" height=\"100%\"><tr><td valign=\"top\"><center>\n")
 fileo.write("\t<table>\n")
-fileo.write("\t\t<tr><td colspan=2><h1><center>" + TITLE[0] + "</center></h1><br/></td></tr>\n")
+fileo.write("\t\t<tr><td colspan=2><h1><center><a target=\"_blank\" href=\"https://boardgamegeek.com/guild/3191\">" + TITLE[0] + "</a></center></h1><br/></td></tr>\n")
 fileo.write("\t\t<tr><td><img src=\"./img/" + OUT_FILE[1].replace("html","jpg") + "\" width=100></td><td><a href=\"" + OUT_FILE[1] + "\"><h3><center>" + TITLE[1] + "</center></h3></a></td></tr>\n")
 fileo.write("\t\t<tr><td><img src=\"./img/" + OUT_FILE[2].replace("html","jpg") + "\" width=100></td><td><a href=\"" + OUT_FILE[2] + "\"><h3><center>" + TITLE[2] + "</center></h3></a></td></tr>\n")
 fileo.write("\t\t<tr><td><img src=\"./img/" + OUT_FILE[3].replace("html","jpg") + "\" width=100></td><td><a href=\"" + OUT_FILE[3] + "\"><h3><center>" + TITLE[3] + "</center></h3></a></td></tr>\n")
 fileo.write("\t\t<tr><td><img src=\"./img/" + OUT_FILE[4].replace("html","jpg") + "\" width=100></td><td><a href=\"" + OUT_FILE[4] + "\"><h3><center>" + TITLE[4] + "</center></h3></a></td></tr>\n")
-fileo.write("\t\t<tr><td colspan=2><br/><br/><center><i><a target=\"_blank\" href=\"https://github.com/mszczerbak/bgg-gaming-group-tools\">fait pour les particiviliens par les particiviliens</a></i></center><br/></td></tr>\n")
+fileo.write("\t\t<tr><td colspan=2><br/><br/><center><i><a target=\"_blank\" href=\"https://github.com/mszczerbak/bgg-gaming-group-tools\">fait pour les particiviliens par les particiviliens</a></i>&nbsp;<span style=\"font-size:7pt\">(" + strftime("%d/%m/%Y", gmtime()) + ")</span></center><br/></td></tr>\n")
+fileo.write("\t\t\n")
 fileo.write("\t</table>\n")
 fileo.write("</center></td></tr></table>\n")
 fileo.write("</body>\n")
