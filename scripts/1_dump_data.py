@@ -3,28 +3,56 @@ import xmltodict
 import requests
 
 DATA_PATH = "../data/"
-IN_FILE = "pc_users.data"
 OUT_FILE = "data_dump.tsv"
 
 #init in/out
-file = open(DATA_PATH + IN_FILE,"r")
-userline = file.read()
-file.close()
-users = userline.split("\n")
 file = open(DATA_PATH + OUT_FILE,"w")
 file.write("user\tobjecttype\tobjectid\tsubtype\tcollid\tname\trating\town\tprevowned\tfortrade\twantintrade\twanttoplay\twanttobuy\twishlist\tpreordered\n")
 file.close()
 
+#get guild details
+print "accessing the guild"
+while True:
+	r = requests.get("https://www.boardgamegeek.com/xmlapi2/guild?id=3191&members=1")
+	if r.status_code == 200:
+		break
+	print " ..bgg api unavailable, waiting..."
+	time.sleep(17)
+body = r.content
+dico = xmltodict.parse(body)
+members_nb = int(dico["guild"]["members"]["@count"])
+users = {}
+for i in range(members_nb):
+	uname = dico["guild"]["members"]["member"][i]["@name"]
+	users[uname] = ""
+
+#get user details
+for user in users.keys():
+	while True:
+		r = requests.get("https://www.boardgamegeek.com/xmlapi2/user?name=" + user)
+		if r.status_code == 200:
+			break
+		print " ..bgg api unavailable, waiting..."
+		time.sleep(17)
+	body = r.content
+	dico = xmltodict.parse(body)
+	fname = dico["user"]["firstname"]["@value"]
+	lname = dico["user"]["lastname"]["@value"]
+	name = user
+	if fname != "" and lname != "":
+		name = fname + " " + lname
+	elif fname != "":
+		name = fname
+	elif lname != "":
+		name = lname
+	users[user] = name
+
 #get the data
-for user in users:
+for user in users.keys():
 	print "processing " + user
 
-	try:
-		bggPseudo = user.split(":")[0]
-		username = user.split(":")[1]
-	except IndexError:
-		print 'can not parse user '+user
-		break
+	bggPseudo = user
+	username = users[user]
 
 	while True:
 		r = requests.get("https://www.boardgamegeek.com/xmlapi2/collection?username=" + bggPseudo + "&stats=1&version=1")
