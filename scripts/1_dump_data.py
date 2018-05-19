@@ -76,7 +76,7 @@ for user in users.keys():
 		if rating == "N/A":
 			rating = ""
 		file = open(DATA_PATH + OUT_FILE,"a+")
-		file.write((bggPseudo if username == "" else username) + "\t")
+		file.write((bggPseudo if username == "" else username).encode('utf-8') + "\t")
 		file.write(dico["items"]["item"][i]["@objecttype"].encode('utf-8') + "\t")
 		file.write(dico["items"]["item"][i]["@objectid"].encode('utf-8') + "\t")
 		file.write(dico["items"]["item"][i]["@subtype"].encode('utf-8') + "\t")
